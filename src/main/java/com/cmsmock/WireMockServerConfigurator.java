@@ -1,9 +1,11 @@
 package com.cmsmock;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
+import static com.github.tomakehurst.wiremock.client.WireMock.get;
 import static com.github.tomakehurst.wiremock.client.WireMock.post;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
 import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.options;
+import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.wireMockConfig;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -32,7 +34,9 @@ public class WireMockServerConfigurator {
 
     public void initializeWireMockServer() {
 
-        WireMockServer wireMockServer = new WireMockServer(options().port(8091)); //No-args constructor will start on port 8080, no HTTPS
+        WireMockServer wireMockServer = new WireMockServer(wireMockConfig()
+                                                            .port(8091)
+                                                            .extensions(ResponseTransformer.class));
         wireMockServer.start();
 
         wireMockServer.stubFor(post(urlEqualTo("/TWIF/C2IOutbound.asmx"))
@@ -41,6 +45,10 @@ public class WireMockServerConfigurator {
                         .withHeader("Content-Type", "text/xml")
                         .withBody("SOAP response Body")));
 
+        wireMockServer.stubFor(get(urlEqualTo("/TWIFMessages/"))
+                            .willReturn(aResponse()
+                                    .withTransformer("response-transformer",null,null)
+                ));
     }
 
 
@@ -58,7 +66,6 @@ public class WireMockServerConfigurator {
         if (matcher.find())
         {
             messageName = matcher.group(1);
-            System.out.println(messageName);
         }
         return messageName;
     }
@@ -76,3 +83,5 @@ public class WireMockServerConfigurator {
         }
     }
 }
+
+
