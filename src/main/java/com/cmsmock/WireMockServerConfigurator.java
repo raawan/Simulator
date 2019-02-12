@@ -60,7 +60,7 @@ public class WireMockServerConfigurator {
     }
 
     private String getRequestId(final String bodyAsString) {
-        Pattern pattern = Pattern.compile("<RequestID>REQUEST_ID_(.*?)</RequestID>");
+        Pattern pattern = Pattern.compile("<RequestID>(.*?)</RequestID>");
         Matcher matcher = pattern.matcher(bodyAsString);
         String messageName="";
         if (matcher.find())
@@ -73,7 +73,7 @@ public class WireMockServerConfigurator {
     private void createFile(final String xmlValue, String requestId) {
 
         final String timeInMillis = Long.toString(System.currentTimeMillis());
-        String fileName =  dir + "/"+DATE_TODAY+"_"+timeInMillis+"_"+requestId+".xml";
+        String fileName =  dir + "/"+DATE_TODAY+"_"+requestId+".xml";
         Path path = Paths.get(fileName);
         try {
             Files.createDirectories(Paths.get(dir));

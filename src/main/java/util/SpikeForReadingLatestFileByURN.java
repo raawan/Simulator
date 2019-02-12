@@ -1,24 +1,24 @@
 package util;
 
-import static com.sun.xml.internal.ws.spi.db.BindingContextFactory.LOGGER;
 import static java.lang.String.format;
+import static util.TwifMessage.C2I01_CPP_TO_CMS;
+import static util.TwifMessage.C2I02;
+import static util.TwifMessage.C2I04;
+import static util.TwifMessage.C2I05;
+import static util.TwifMessage.C2I08;
+import static util.TwifMessage.C2I09;
+import static util.TwifMessage.FIRST_CM01;
+import static util.TwifMessage.LMID06;
+import static util.TwifMessage.SUBSEQUENT_CM01;
 
-import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.Properties;
-import java.util.function.Predicate;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import com.jayway.restassured.path.xml.XmlPath;
-import static util.TwifMessage.*;
 
 
 

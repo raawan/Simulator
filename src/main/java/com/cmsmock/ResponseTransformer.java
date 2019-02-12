@@ -1,6 +1,9 @@
 package com.cmsmock;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.ObjectOutput;
+import java.io.ObjectOutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -8,6 +11,8 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import javax.ws.rs.core.Response;
 
 import com.github.tomakehurst.wiremock.client.ResponseDefinitionBuilder;
 import com.github.tomakehurst.wiremock.common.FileSource;
@@ -26,6 +31,26 @@ public class ResponseTransformer extends ResponseDefinitionTransformer {
     public ResponseDefinition transform(Request request, ResponseDefinition responseDefinition, FileSource files, Parameters parameters) {
 
         final String concatenatedStringOfTodaysFiles = getTodaysFileList();
+
+//        Response response = Response.status(201).entity(concatenatedStringOfTodaysFiles).build();
+//        byte[] yourBytes= new byte[1];
+//        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+//        ObjectOutput out = null;
+//        try {
+//            out = new ObjectOutputStream(bos);
+//            out.writeObject(response);
+//            out.flush();
+//            yourBytes = bos.toByteArray();
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        } finally {
+//            try {
+//                bos.close();
+//            } catch (IOException ex) {
+//                // ignore close exception
+//            }
+//        }
+
         System.out.println("============================================");
         System.out.println(concatenatedStringOfTodaysFiles);
         System.out.println("============================================");
