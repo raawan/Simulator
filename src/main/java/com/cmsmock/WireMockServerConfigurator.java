@@ -3,8 +3,12 @@ package com.cmsmock;
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.get;
 import static com.github.tomakehurst.wiremock.client.WireMock.post;
+import static com.github.tomakehurst.wiremock.client.WireMock.requestMatching;
+import static com.github.tomakehurst.wiremock.client.WireMock.seeOther;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
-import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.options;
+import static com.github.tomakehurst.wiremock.client.WireMock.urlMatching;
+import static com.github.tomakehurst.wiremock.client.WireMock.urlPathEqualTo;
+import static com.github.tomakehurst.wiremock.client.WireMock.urlPathMatching;
 import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.wireMockConfig;
 
 import java.io.IOException;
@@ -23,8 +27,13 @@ import com.github.tomakehurst.wiremock.matching.MatchResult;
 public class WireMockServerConfigurator {
 
     private static final String dir = "/tmp/TWIFMessages";
-    public static final String TWIF_DATE_FORMAT = "dd_MM_yyyyHH_mm";
+    public static final String TWIF_DATE_FORMAT_WITH_HHMM = "dd_MM_yyyyHH_mm";
+    public static final String TWIF_DATE_FORMAT = "dd_MM_yyyy";
+    private static final String DATE_TODAY_WITH_HHMM = new SimpleDateFormat(TWIF_DATE_FORMAT_WITH_HHMM).format(new Date());
     private static final String DATE_TODAY = new SimpleDateFormat(TWIF_DATE_FORMAT).format(new Date());
+
+    private static final String TWIF_MESSAGE_LIST_URL = "/message-list?date=today";
+    private static final String TWIF_MESSAGE_FILE_URL = "/message-file/";
 
     public static void main(String[] args) {
 
@@ -36,23 +45,31 @@ public class WireMockServerConfigurator {
 
         WireMockServer wireMockServer = new WireMockServer(wireMockConfig()
                                                             .port(8091)
-                                                            .extensions(ResponseTransformer.class));
+                                                            .extensions(ResponseTransformer.class,ResponseTransformerSpecificUrl.class));
         wireMockServer.start();
 
-        wireMockServer.stubFor(post(urlEqualTo("/TWIF/C2IOutbound.asmx"))
+        wireMockServer.stubFor(get(urlPathMatching(TWIF_MESSAGE_FILE_URL+DATE_TODAY+"\\d{2}_\\d{2}_.*"))
+                .willReturn(aResponse()
+                        .withTransformer("response-transformer-specific-url",null,null)
+                ));
+
+        wireMockServer.stubFor(get(urlEqualTo(TWIF_MESSAGE_LIST_URL))
+                .willReturn(aResponse()
+                        .withTransformer("response-transformer",null,null)
+                ));
+
+
+        wireMockServer.stubFor(post(urlPathEqualTo("/TWIF/C2IOutbound.asmx"))
                 .andMatching(this::someCustomMatcher)
                 .willReturn(aResponse()
                         .withHeader("Content-Type", "text/xml")
                         .withBody("SOAP response Body")));
 
-        wireMockServer.stubFor(get(urlEqualTo("/TWIFMessages/"))
-                            .willReturn(aResponse()
-                                    .withTransformer("response-transformer",null,null)
-                ));
     }
 
 
     public MatchResult someCustomMatcher(final Request request) {
+        System.out.println("++++++++++++++++FILE_DUMPED++++++++++++++++");
         String requestId= getRequestId(request.getBodyAsString());
         createFile(request.getBodyAsString(),requestId);
         return MatchResult.of(true);
@@ -73,7 +90,7 @@ public class WireMockServerConfigurator {
     private void createFile(final String xmlValue, String requestId) {
 
         final String timeInMillis = Long.toString(System.currentTimeMillis());
-        String fileName =  dir + "/"+DATE_TODAY+"_"+requestId+".xml";
+        String fileName =  dir + "/"+ DATE_TODAY_WITH_HHMM +"_"+requestId+".xml";
         Path path = Paths.get(fileName);
         try {
             Files.createDirectories(Paths.get(dir));

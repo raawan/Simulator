@@ -32,28 +32,9 @@ public class ResponseTransformer extends ResponseDefinitionTransformer {
 
         final String concatenatedStringOfTodaysFiles = getTodaysFileList();
 
-//        Response response = Response.status(201).entity(concatenatedStringOfTodaysFiles).build();
-//        byte[] yourBytes= new byte[1];
-//        ByteArrayOutputStream bos = new ByteArrayOutputStream();
-//        ObjectOutput out = null;
-//        try {
-//            out = new ObjectOutputStream(bos);
-//            out.writeObject(response);
-//            out.flush();
-//            yourBytes = bos.toByteArray();
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        } finally {
-//            try {
-//                bos.close();
-//            } catch (IOException ex) {
-//                // ignore close exception
-//            }
-//        }
-
-        System.out.println("============================================");
+        System.out.println("============================================B");
         System.out.println(concatenatedStringOfTodaysFiles);
-        System.out.println("============================================");
+        System.out.println("============================================B");
         return new ResponseDefinitionBuilder()
                 .withHeader("Content-Type", "text/xml")
                 .withStatus(200)
