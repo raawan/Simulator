@@ -45,25 +45,32 @@ public class WireMockServerConfigurator {
 
         WireMockServer wireMockServer = new WireMockServer(wireMockConfig()
                                                             .port(8091)
-                                                            .extensions(ResponseTransformer.class,ResponseTransformerSpecificUrl.class));
+                                                            .extensions(/*ResponseTransformer.class,
+                                                                    ResponseTransformerSpecificUrl.class,*/
+                                                                    AllTransformer.class));
         wireMockServer.start();
 
-        wireMockServer.stubFor(get(urlPathMatching(TWIF_MESSAGE_FILE_URL+DATE_TODAY+"\\d{2}_\\d{2}_.*"))
+//        wireMockServer.stubFor(post(urlPathEqualTo("/TWIF/C2IOutbound.asmx"))
+//                .andMatching(this::someCustomMatcher)
+//                .willReturn(aResponse()
+//                        .withHeader("Content-Type", "text/xml")
+//                        .withBody("SOAP response Body")));
+//
+//        wireMockServer.stubFor(get(urlEqualTo(TWIF_MESSAGE_LIST_URL))
+//                .willReturn(aResponse()
+//                        .withTransformer("response-transformer",null,null)
+//                ));
+//
+//
+//        wireMockServer.stubFor(get(urlPathMatching(TWIF_MESSAGE_FILE_URL+DATE_TODAY+"\\d{2}_\\d{2}_.*"))
+//                .willReturn(aResponse()
+//                        .withTransformer("response-transformer-specific-url",null,null)
+//                ));
+
+        wireMockServer.stubFor(requestMatching(request -> MatchResult.of(true))
                 .willReturn(aResponse()
-                        .withTransformer("response-transformer-specific-url",null,null)
+                        .withTransformer("all-transformer",null,null)
                 ));
-
-        wireMockServer.stubFor(get(urlEqualTo(TWIF_MESSAGE_LIST_URL))
-                .willReturn(aResponse()
-                        .withTransformer("response-transformer",null,null)
-                ));
-
-
-        wireMockServer.stubFor(post(urlPathEqualTo("/TWIF/C2IOutbound.asmx"))
-                .andMatching(this::someCustomMatcher)
-                .willReturn(aResponse()
-                        .withHeader("Content-Type", "text/xml")
-                        .withBody("SOAP response Body")));
 
     }
 
