@@ -1,11 +1,12 @@
 package com.cmsmock.response_transformer;
 
+import static com.cmsmock.response_transformer.util.GlobalConstants.DATE_TODAY_WITH_HHMM;
+import static com.cmsmock.response_transformer.util.GlobalConstants.dir;
+
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -18,9 +19,7 @@ import com.github.tomakehurst.wiremock.http.ResponseDefinition;
 
 public class MessageReceivedResponseTransformer extends ResponseDefinitionTransformer {
 
-    private static final String dir = "/tmp/TWIFMessages";
-    private static final String TWIF_DATE_FORMAT_WITH_HHMM = "dd_MM_yyyyHH_mm";
-    private static final String DATE_TODAY_WITH_HHMM = new SimpleDateFormat(TWIF_DATE_FORMAT_WITH_HHMM).format(new Date());
+    public static final String MESSAGE_RECEIVED_RESPONSE_TRANSFORMER = "message-received-response-transformer";
 
     @Override
     public ResponseDefinition transform(final Request request, final ResponseDefinition responseDefinition, final FileSource fileSource, final Parameters parameters) {
@@ -37,7 +36,7 @@ public class MessageReceivedResponseTransformer extends ResponseDefinitionTransf
 
     @Override
     public String getName() {
-        return "message-received-response-transformer";
+        return MESSAGE_RECEIVED_RESPONSE_TRANSFORMER;
     }
 
     private String getRequestId(final String bodyAsString) {

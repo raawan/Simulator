@@ -6,6 +6,7 @@ import java.nio.file.Paths;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import com.cmsmock.response_transformer.util.GlobalConstants;
 import com.github.tomakehurst.wiremock.client.ResponseDefinitionBuilder;
 import com.github.tomakehurst.wiremock.common.FileSource;
 import com.github.tomakehurst.wiremock.extension.Parameters;
@@ -13,9 +14,9 @@ import com.github.tomakehurst.wiremock.extension.ResponseDefinitionTransformer;
 import com.github.tomakehurst.wiremock.http.Request;
 import com.github.tomakehurst.wiremock.http.ResponseDefinition;
 
-public class GetFileResponseTransformer extends ResponseDefinitionTransformer {
+public class GetMessageResponseTransformer extends ResponseDefinitionTransformer {
 
-    private static final String dir = "/tmp/TWIFMessages";
+    public  static final String GET_FILE_RESPONSE_TRANSFORMER = "get-file-response-transformer";
 
     @Override
     public ResponseDefinition transform(final Request request, final ResponseDefinition responseDefinition,
@@ -45,7 +46,7 @@ public class GetFileResponseTransformer extends ResponseDefinitionTransformer {
 
     @Override
     public String getName() {
-        return "get-file-response-transformer";
+        return GET_FILE_RESPONSE_TRANSFORMER;
     }
 
     @Override
@@ -67,7 +68,7 @@ public class GetFileResponseTransformer extends ResponseDefinitionTransformer {
 
     private static String getFileContentAsString(final String fileName) throws IOException {
 
-        String fileContentWithSOAPEnvelope = new String(Files.readAllBytes(Paths.get(dir + fileName)));
+        String fileContentWithSOAPEnvelope = new String(Files.readAllBytes(Paths.get(GlobalConstants.dir + fileName)));
         String contentOfMessageTag = getContentOfMessageTag(fileContentWithSOAPEnvelope);
         return contentOfMessageTag;
     }
