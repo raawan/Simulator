@@ -1,9 +1,6 @@
-package com.cmsmock;
+package com.cmsmock.response_transformer;
 
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.ObjectOutput;
-import java.io.ObjectOutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -12,8 +9,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import javax.ws.rs.core.Response;
-
 import com.github.tomakehurst.wiremock.client.ResponseDefinitionBuilder;
 import com.github.tomakehurst.wiremock.common.FileSource;
 import com.github.tomakehurst.wiremock.extension.Parameters;
@@ -21,7 +16,7 @@ import com.github.tomakehurst.wiremock.extension.ResponseDefinitionTransformer;
 import com.github.tomakehurst.wiremock.http.Request;
 import com.github.tomakehurst.wiremock.http.ResponseDefinition;
 
-public class ResponseTransformer extends ResponseDefinitionTransformer {
+public class TodaysMessageListResponseTransformer extends ResponseDefinitionTransformer {
 
     private static final String dir = "/tmp/TWIFMessages";
     public static final String TWIF_DATE_FORMAT = "dd_MM_yyyy";
@@ -32,9 +27,9 @@ public class ResponseTransformer extends ResponseDefinitionTransformer {
 
         final String concatenatedStringOfTodaysFiles = getTodaysFileList();
 
-        System.out.println("============================================B");
+        System.out.println("============================================");
         System.out.println(concatenatedStringOfTodaysFiles);
-        System.out.println("============================================B");
+        System.out.println("============================================");
         return new ResponseDefinitionBuilder()
                 .withHeader("Content-Type", "text/xml")
                 .withStatus(200)
@@ -44,7 +39,12 @@ public class ResponseTransformer extends ResponseDefinitionTransformer {
 
     @Override
     public String getName() {
-        return "response-transformer";
+        return "todays-message-list-response-transformer";
+    }
+
+    @Override
+    public boolean applyGlobally() {
+        return false;
     }
 
     private String getTodaysFileList() {
@@ -55,7 +55,7 @@ public class ResponseTransformer extends ResponseDefinitionTransformer {
                     .filter(Files::isRegularFile)
                     .filter((val) -> val.getFileName().toString().startsWith(DATE_TODAY))
                     .collect(Collectors.toList());
-            for(Path path : paths) {
+            for (Path path : paths) {
                 stringBuilder.append(" ").append(path.getFileName());
             }
         } catch (IOException e) {

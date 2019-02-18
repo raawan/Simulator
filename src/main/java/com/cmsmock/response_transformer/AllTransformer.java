@@ -1,4 +1,4 @@
-package com.cmsmock;
+package com.cmsmock.response_transformer;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -91,6 +91,11 @@ public class AllTransformer extends ResponseDefinitionTransformer {
     @Override
     public String getName() {
         return "all-transformer";
+    }
+
+    @Override
+    public boolean applyGlobally() {
+        return false;
     }
 
     private String getRequestId(final String bodyAsString) {
