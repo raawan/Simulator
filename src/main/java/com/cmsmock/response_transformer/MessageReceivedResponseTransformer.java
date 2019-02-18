@@ -16,15 +16,18 @@ import com.github.tomakehurst.wiremock.extension.Parameters;
 import com.github.tomakehurst.wiremock.extension.ResponseDefinitionTransformer;
 import com.github.tomakehurst.wiremock.http.Request;
 import com.github.tomakehurst.wiremock.http.ResponseDefinition;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class MessageReceivedResponseTransformer extends ResponseDefinitionTransformer {
+
+    final static Logger logger = LoggerFactory.getLogger(MessageReceivedResponseTransformer.class);
 
     public static final String MESSAGE_RECEIVED_RESPONSE_TRANSFORMER = "message-received-response-transformer";
 
     @Override
     public ResponseDefinition transform(final Request request, final ResponseDefinition responseDefinition, final FileSource fileSource, final Parameters parameters) {
-
-        System.out.println("++++++++++++++++FILE_DUMPED++++++++++++++++");
+        logger.info("Message received : {} ",request.getBodyAsString());
         String requestId = getRequestId(request.getBodyAsString());
         createFile(request.getBodyAsString(), requestId);
         return new ResponseDefinitionBuilder()
@@ -58,17 +61,18 @@ public class MessageReceivedResponseTransformer extends ResponseDefinitionTransf
     private void createFile(final String xmlValue, String requestId) {
 
         String fileName = dir + "/" + DATE_TODAY_WITH_HHMM + "_" + requestId + ".xml";
+        logger.info("Message stored in a file : {}",fileName);
         Path path = Paths.get(fileName);
         try {
             Files.createDirectories(Paths.get(dir));
             Files.write(path, xmlValue.getBytes());
         } catch (IOException e) {
-            e.printStackTrace();
+            logger.debug("Problem creating file : {}",e);
         }
     }
 
     private static String generateSuccessResponse(String requestId) {
-        return "<soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\" xmlns:typ=\"http://schemas.cjse.gov.uk/endpoint/types/\">\n" +
+        final String response = "<soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\" xmlns:typ=\"http://schemas.cjse.gov.uk/endpoint/types/\">\n" +
                 "   <soapenv:Header/>\n" +
                 "   <soapenv:Body>\n" +
                 "      <typ:SubmitResponseMes>\n" +
@@ -78,6 +82,8 @@ public class MessageReceivedResponseTransformer extends ResponseDefinitionTransf
                 "      </typ:SubmitResponseMes>\n" +
                 "   </soapenv:Body>\n" +
                 "</soapenv:Envelope>";
+        logger.info("Sending response : {}",response);
+        return response;
     }
 
 

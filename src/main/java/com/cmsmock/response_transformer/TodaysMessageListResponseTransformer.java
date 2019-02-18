@@ -17,19 +17,20 @@ import com.github.tomakehurst.wiremock.extension.Parameters;
 import com.github.tomakehurst.wiremock.extension.ResponseDefinitionTransformer;
 import com.github.tomakehurst.wiremock.http.Request;
 import com.github.tomakehurst.wiremock.http.ResponseDefinition;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class TodaysMessageListResponseTransformer extends ResponseDefinitionTransformer {
 
     public static final String TODAYS_MESSAGE_LIST_RESPONSE_TRANSFORMER = "todays-message-list-response-transformer";
-
+    final static Logger logger = LoggerFactory.getLogger(TodaysMessageListResponseTransformer.class);
 
     @Override
     public ResponseDefinition transform(Request request, ResponseDefinition responseDefinition, FileSource files, Parameters parameters) {
 
         final String concatenatedStringOfTodaysFiles = getTodaysFileList();
-        System.out.println("============================================");
-        System.out.println(concatenatedStringOfTodaysFiles);
-        System.out.println("============================================");
+        logger.info("Received request to get list of todays file : {}",request.getUrl());
+        logger.info("Sending response:{} ",concatenatedStringOfTodaysFiles);
         return new ResponseDefinitionBuilder()
                 .withHeader("Content-Type", "text/xml")
                 .withStatus(200)
@@ -59,7 +60,7 @@ public class TodaysMessageListResponseTransformer extends ResponseDefinitionTran
                 stringBuilder.append(FILE_LIST_SEPARATOR).append(path.getFileName());
             }
         } catch (IOException e) {
-            e.printStackTrace();
+            logger.debug("Problem forming list of todays file : {}",e);
         }
         return stringBuilder.toString();
     }
