@@ -28,14 +28,18 @@ public class TodaysMessageListResponseTransformer extends ResponseDefinitionTran
     @Override
     public ResponseDefinition transform(Request request, ResponseDefinition responseDefinition, FileSource files, Parameters parameters) {
 
+        long currentTime = System.currentTimeMillis();
         final String concatenatedStringOfTodaysFiles = getTodaysFileList();
         logger.info("Received request to get list of todays file : {}",request.getUrl());
         logger.info("Sending response:{} ",concatenatedStringOfTodaysFiles);
-        return new ResponseDefinitionBuilder()
+        final ResponseDefinition responseDefinition1 = new ResponseDefinitionBuilder()
                 .withHeader("Content-Type", "text/xml")
                 .withStatus(200)
                 .withBody(concatenatedStringOfTodaysFiles)
                 .build();
+        long timeToExecute = System.currentTimeMillis() - currentTime;
+        logger.info("TodaysMessageListResponseTransformer:TIME TO EXECUTE : {}",timeToExecute);
+        return responseDefinition1;
     }
 
     @Override

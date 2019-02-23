@@ -32,6 +32,7 @@ public class WireMockServerConfigurator {
 
         WireMockServer wireMockServer = new WireMockServer(wireMockConfig()
                 .port(8091)
+                .disableRequestJournal() //this requires for verification , we are not doing verification at the moment
                 .extensions(GetMessageResponseTransformer.class,
                         MessageReceivedResponseTransformer.class,
                         TodaysMessageListResponseTransformer.class));

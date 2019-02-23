@@ -26,15 +26,20 @@ public class MessageReceivedResponseTransformer extends ResponseDefinitionTransf
     public static final String MESSAGE_RECEIVED_RESPONSE_TRANSFORMER = "message-received-response-transformer";
 
     @Override
-    public ResponseDefinition transform(final Request request, final ResponseDefinition responseDefinition, final FileSource fileSource, final Parameters parameters) {
+    public ResponseDefinition transform(final Request request, final ResponseDefinition responseDefinition,
+                                        final FileSource fileSource, final Parameters parameters) {
+        long currentTime = System.currentTimeMillis();
         logger.info("Message received : {} ",request.getBodyAsString());
         String requestId = getRequestId(request.getBodyAsString());
         createFile(request.getBodyAsString(), requestId);
-        return new ResponseDefinitionBuilder()
+        final ResponseDefinition responseDefinition1 = new ResponseDefinitionBuilder()
                 .withHeader("Content-Type", "text/xml")
                 .withStatus(200)
                 .withBody(generateSuccessResponse(requestId))
                 .build();
+        long timeToExecute = System.currentTimeMillis() - currentTime;
+        logger.info("MessageReceivedResponseTransformer:TIME TO EXECUTE : {}",timeToExecute);
+        return responseDefinition1;
     }
 
     @Override
@@ -62,8 +67,9 @@ public class MessageReceivedResponseTransformer extends ResponseDefinitionTransf
 
         String fileName = dir + "/" + DATE_TODAY_WITH_HHMM + "_" + requestId + ".xml";
         logger.info("Message stored in a file : {}",fileName);
-        Path path = Paths.get(fileName);
+
         try {
+            Path path = Paths.get(fileName);
             Files.createDirectories(Paths.get(dir));
             Files.write(path, xmlValue.getBytes());
         } catch (IOException e) {

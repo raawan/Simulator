@@ -25,25 +25,30 @@ public class GetMessageResponseTransformer extends ResponseDefinitionTransformer
     @Override
     public ResponseDefinition transform(final Request request, final ResponseDefinition responseDefinition,
                                         final FileSource fileSource, final Parameters parameters) {
+        long currentTime = System.currentTimeMillis();
         logger.info("Request received to get message : {}" , request.getUrl());
-
+        ResponseDefinition responseDefinition1 = new ResponseDefinition();
         String fileName = getFileName(request.getUrl());
         try {
             String fileContent = getFileContentAsString(fileName);
             logger.info("Sending response for the request {} : {}",request.getUrl(),fileContent);
-            return new ResponseDefinitionBuilder()
+              responseDefinition1 = new ResponseDefinitionBuilder()
                     .withHeader("Content-Type", "text/xml")
                     .withStatus(200)
                     .withBody(fileContent)
                     .build();
+
         } catch (IOException e) {
             logger.debug("File read is not successful:{}",e);
-            return new ResponseDefinitionBuilder()
+            responseDefinition1 = new ResponseDefinitionBuilder()
                     .withHeader("Content-Type", "text/xml")
                     .withStatus(400)
                     .withBody("FileNotPresent")
                     .build();
         }
+        long timeToExecute = System.currentTimeMillis() - currentTime;
+        logger.info("GetMessageResponseTransformer:TIME TO EXECUTE : {}",timeToExecute);
+        return responseDefinition1;
     }
 
     @Override
